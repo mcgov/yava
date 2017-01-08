@@ -39,7 +39,9 @@ def count_n_gram_frequency( raw_list ):
     return frequencies
 
 def calculate_symbol_entropy( frequency_dict ):
-    """ returns the entropy of a symbol frequency list.
+    """ 
+        returns the entropy of a symbol frequency list.
+        thiiis might not be correct
     """
     distinct_symbol_count = len( frequency_dict )
     return -sum( frequency/distinct_symbol_count * math.log(frequency/distinct_symbol_count, 2) for frequency in frequency_dict.values() ) 
@@ -111,7 +113,7 @@ def print_lda_document_topic_results( model, vocab, document_titles, how_many ):
         print("{} (top topic: {})".format(titles[i], document_topic[i].argmax()))
 """ 
 
-from voynich_lib import *
+from voynich import *
 
 if __name__ == "__main__":
     import sys
@@ -130,8 +132,9 @@ if __name__ == "__main__":
         entropy = calculate_symbol_entropy(symb_freq)
         ng = count_n_grams( body, 5, logographic=False )
         print( 'symbols:', symb_freq )
-        print( 'entropy:', entropy )
         print( ng )
+
+        print( 'entropy:', entropy )
     
 
     """
