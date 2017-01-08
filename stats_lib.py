@@ -22,7 +22,7 @@ def count_symbol_frequency( text ):
             frequencies[ch] = 1
     return frequencies
 
-def count_n_gram_frequency( raw_list ):
+def count_phrase_frequency( raw_list ):
     """ count the frequency that phrases and words appear in a text,
      when passed the list of phrases (which are kept as lists). 
      It's a list of lists.
@@ -46,20 +46,20 @@ def calculate_symbol_entropy( frequency_dict ):
     distinct_symbol_count = len( frequency_dict )
     return -sum( frequency/distinct_symbol_count * math.log(frequency/distinct_symbol_count, 2) for frequency in frequency_dict.values() ) 
 
-def generate_list_of_raw_ngrams( split_text, up_to_length ):
+def generate_list_of_raw_phrases( split_text, up_to_length ):
     """
     Gathers frequency data for n-grams (words and phrases up to length n).
     Pass a body of text and the length N that you want the phrases to be.
     """
-    list_of_ngrams = []
+    list_of_phrases = []
     for j in range(1, up_to_length+1): #inclusive
         for i in range(0, len(split_text)):
-            n_gram = split_text[i:i+j]
-            if len( n_gram) == j:
-                list_of_ngrams.append( n_gram  )
-    return list_of_ngrams
+            phrase = split_text[i:i+j]
+            if len( phrase) == j:
+                list_of_phrases.append( phrase  )
+    return list_of_phrases
 
-def count_n_grams( text, up_to_length, logographic=False ):
+def count_phrases( text, up_to_length, logographic=False ):
     split_text = None
     """
     if logographic:
@@ -69,10 +69,10 @@ def count_n_grams( text, up_to_length, logographic=False ):
     
     split_text = split_with_selector(text, include_dubious=False)
         #print( split_text )
-    raw_ngrams = generate_list_of_raw_ngrams( split_text , up_to_length )
-    #print(  raw_ngrams )
-    n_gram_count = count_n_gram_frequency( raw_ngrams )
-    return n_gram_count
+    raw_phrases = generate_list_of_raw_phrases( split_text , up_to_length )
+    #print(  raw_phrases )
+    phrase_count = count_phrase_frequency( raw_phrases )
+    return phrase_count
 
 
 def set_up_character_ranges_table():
@@ -130,7 +130,7 @@ if __name__ == "__main__":
         print( body )
         symb_freq = count_symbol_frequency(body)
         entropy = calculate_symbol_entropy(symb_freq)
-        ng = count_n_grams( body, 5, logographic=False )
+        ng = count_phrases( body, 5, logographic=False )
         print( 'symbols:', symb_freq )
         print( ng )
 
@@ -148,9 +148,9 @@ if __name__ == "__main__":
     test2 = count_symbol_frequency(test_text2)
     print( test2, calculate_symbol_entropy(test2 ) )
 
-    print("NGRAM FREQUENCY:")
-    print( count_n_grams( test_text2, 5, logographic=True ) )
-    print( count_n_grams( test_text, 5, logographic=False ) )
+    print("phrase FREQUENCY:")
+    print( count_phrases( test_text2, 5, logographic=True ) )
+    print( count_phrases( test_text, 5, logographic=False ) )
 
     table = set_up_character_ranges_table()
     print("LANGUAGE IDENT FROM UNICODE:")
