@@ -75,6 +75,24 @@ def count_phrases( text, up_to_length, logographic=False ):
     return phrase_count
 
 
+def collect_ngrams(text, ngram_length=10):
+    ngram_dict = dict()
+    for length in range(1, ngram_length):
+        for i in range(len(text)):
+            substring = None
+            try:
+                substring = text[i:i+length] 
+            except :
+                 break;
+            #print( substring)
+            if substring in ngram_dict:
+                ngram_dict[substring] += 1
+            else:
+                ngram_dict[substring] = 1
+    return ngram_dict
+
+
+
 def set_up_character_ranges_table():
     # (low, high, string_name )
     ranges = []
@@ -111,7 +129,8 @@ def print_lda_document_topic_results( model, vocab, document_titles, how_many ):
     document_topic = model.doc_topic_
     for i in range( how_many ):
         print("{} (top topic: {})".format(titles[i], document_topic[i].argmax()))
-""" 
+
+"""
 
 from voynich import *
 
@@ -122,22 +141,23 @@ if __name__ == "__main__":
     with open( in_file, 'r', encoding="latin-1") as inputfile:
         body = ""
         for line in inputfile:
-            if line[0] != '#' and parse_line_header(line, transcription='F', page=39):
+            if line[0] != '#' and parse_line_header(line, transcription='F'):
                 line = remove_comments(line)
                 line = remove_filler(line)
                 line = remove_breaks(line)
-                body += remove_line_header(line)
+                body += remove_line_header(line).strip()
         print( body )
         symb_freq = count_symbol_frequency(body)
         entropy = calculate_symbol_entropy(symb_freq)
-        ng = count_phrases( body, 5, logographic=False )
+        phrases = count_phrases( body, 5, logographic=False )
         print( 'symbols:', symb_freq )
-        print( ng )
-
+        print( phrases )
         print( 'entropy:', entropy )
+        ngrams = collect_ngrams(remove_breaks(body, remove_spaces=False), ngram_length=7)
+        print( ngrams )
     
 
-    """
+"""
     test_text = "Do you love me or do you love me not?" #ima be me
     test_text2 =  "你爱不爱我？"
 

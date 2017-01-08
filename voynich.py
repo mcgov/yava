@@ -1,62 +1,62 @@
 #! /usr/bin/python3
 
 """
-	A library to handle the ascii transcritions of voynich in text16e6.evt
+    A library to handle the ascii transcritions of voynich in text16e6.evt
 
-	Notes:
-		-There are lots of comments. We ignore them.
-		-Lines we care about have a header of the form:
-			<f[0-9]{1:3}r.P.[0-9]{1-3};'TRANSCRIPTION_CODE'>
-		where 'TRANSCRIPTION_CODE' is substituted for a single letter
-		signifying a transcriber. 
+    Notes:
+        -There are lots of comments. We ignore them.
+        -Lines we care about have a header of the form:
+            <f[0-9]{1:3}r.P.[0-9]{1-3};'TRANSCRIPTION_CODE'>
+        where 'TRANSCRIPTION_CODE' is substituted for a single letter
+        signifying a transcriber. 
 
 
 """
 
 def strchr(string, char):
-	for i in range(0,len(string)):
-		if string[i] == char:
-			return i
-	return None
+    for i in range(0,len(string)):
+        if string[i] == char:
+            return i
+    return None
 
 def rstrchr(string, char):
-	for i in range(len(string),0):
-		if string[-i] == char:
-			return i
-	return None
+    for i in range(len(string),0):
+        if string[-i] == char:
+            return i
+    return None
 
 
 def get_line_header( line, transcription=None, page=None ):
-	begin_i = strchr(line,'<')
-	end_i = strchr(line,'>') + 1
-	header = line[begin_i:end_i]
-	return header
+    begin_i = strchr(line,'<')
+    end_i = strchr(line,'>') + 1
+    header = line[begin_i:end_i]
+    return header
 
 def remove_line_header(line):
-	return line.replace(get_line_header(line), "")
+    return line.replace(get_line_header(line), "")
 
 def parse_line_header( line, transcription=None, page=None ):
-	header = get_line_header(line)
-	match_transcriber = False
-	page_match = False
-	if transcription:
-		if header[-2] == transcription:
-			match_transcriber = True
-	if page:
-		split= header.split('.')
-		if str(page) == split[-1].split(";")[0]:
-				page_match = True
-	if not transcription and not page:
-		return line
-	if transcription and not page and match_transcriber:
-		return line
-	if not transcription and page and page_match:
-		return line
-	if transcription and match_transcriber and page and page_match:
-		return line
-	return None
+    header = get_line_header(line)
+    match_transcriber = False
+    page_match = False
+    if transcription:
+        if header[-2] == transcription:
+            match_transcriber = True
+    if page:
+        split= header.split('.')
+        if str(page) == split[-1].split(";")[0]:
+                page_match = True
+    if not transcription and not page:
+        return line
+    if transcription and not page and match_transcriber:
+        return line
+    if not transcription and page and page_match:
+        return line
+    if transcription and match_transcriber and page and page_match:
+        return line
+    return None
 
-	
+    
 
 """
 Transcriber codes
@@ -98,63 +98,72 @@ Transcriber codes
 """
 
 def TRANSCRIBER(name):
-	if string_name.contains("Friedman") or string_name.contains("FSG"):
-		return "F"
-	if string_name.contains("Tiltman"):
-		return "T"
-	if string_name.contains("Lathams"):
-		return "L"
-	if string_name.contains("Roe"):
-		return "R"
-	if string_name.contains("Kluge"):
-		return "K"
-	if string_name.contains("Reed"):
-		return "R"
-	if string_name.contains("Takahashi"):
-		return 'H'
-	if string_name.contains("Landini"):
-		return "N"
-	if string_name.contains("Stolfi"):
-		return "U"
-	if string_name.contains("Currier"):
-		return "C"
-	if string_name.contains("Grove"):
-		return "V"
-	if string_name.contains("Peterson"):
-		return "P"
-	if string_name.contains("Mardle"):
-		return "X"
-	if string_name.contains("Zandbergen"):
-		return "Z"
+    if string_name.contains("Friedman") or string_name.contains("FSG"):
+        return "F"
+    if string_name.contains("Tiltman"):
+        return "T"
+    if string_name.contains("Lathams"):
+        return "L"
+    if string_name.contains("Roe"):
+        return "R"
+    if string_name.contains("Kluge"):
+        return "K"
+    if string_name.contains("Reed"):
+        return "R"
+    if string_name.contains("Takahashi"):
+        return 'H'
+    if string_name.contains("Landini"):
+        return "N"
+    if string_name.contains("Stolfi"):
+        return "U"
+    if string_name.contains("Currier"):
+        return "C"
+    if string_name.contains("Grove"):
+        return "V"
+    if string_name.contains("Peterson"):
+        return "P"
+    if string_name.contains("Mardle"):
+        return "X"
+    if string_name.contains("Zandbergen"):
+        return "Z"
 
 
 
 def split_with_selector(line, include_dubious=False):
-	final = []
-	splat = line.split(".")
-	if include_dubious:
-		for item in splat:
-			for split_item in item.split(","):
-				final.append(split_item)
-	else:
-		for item in splat:
-			final.append(item.replace(",",""))
-	return final
+    final = []
+    splat = line.split(".")
+    if include_dubious:
+        for item in splat:
+            for split_item in item.split(","):
+                final.append(split_item)
+    else:
+        for item in splat:
+            final.append(item.replace(",",""))
+    return final
 
 
 def remove_comments(line):
-	line = line
-	while "{" in line:
-		begin = strchr(line,"{")
-		end = strchr(line,"}")+1
-		line = line.replace(line[begin:end],"")
-	return line
+    line = line
+    while "{" in line:
+        begin = strchr(line,"{")
+        end = strchr(line,"}")+1
+        line = line.replace(line[begin:end],"")
+    return line
 
 def remove_filler(line):
-	line = line.replace("!","")
-	return line.replace("%","")
+    line = line.replace("!","")
+    return line.replace("%","")
 
-def remove_breaks(line):
-	line=line.replace("=", "")
-	line=line.replace("\n","")
-	return line.replace("-", "")
+def remove_breaks(line,remove_spaces=False):
+    line=line.replace("=", "")
+    line=line.replace("\n","")
+    line=line.replace("\t"," ")
+
+    line = line.replace(".", " ")
+    line = line.replace("-", " ")
+    if remove_spaces:
+        line = line.replace(" ", "")
+    return line
+
+def prepare_line(line):
+    return remove_breaks( remove_filler( remove_comments(line) ) ) 
