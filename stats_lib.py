@@ -44,7 +44,9 @@ def calculate_symbol_entropy( frequency_dict ):
         thiiis might not be correct
     """
     distinct_symbol_count = len( frequency_dict )
-    return -sum( frequency/distinct_symbol_count * math.log(frequency/distinct_symbol_count, 2) for frequency in frequency_dict.values() ) 
+    total = sum(frequency_dict.values())
+    #print(frequency_dict.values())
+    return -sum( [ (frequency/total) * math.log(frequency/total, 2) for frequency in frequency_dict.values() ] )
 
 def generate_list_of_raw_phrases( split_text, up_to_length ):
     """
@@ -75,13 +77,14 @@ def count_phrases( text, up_to_length, logographic=False ):
     return phrase_count
 
 
-def collect_ngrams(text, ngram_length=10):
+def collect_ngrams(text, ngram_length=10, single_level=False):
     ngram_dict = dict()
-    for length in range(1, ngram_length):
+
+    if single_level:
         for i in range(len(text)):
             substring = None
             try:
-                substring = text[i:i+length] 
+                substring = text[i:i+ngram_length] 
             except :
                  break;
             #print( substring)
@@ -89,6 +92,19 @@ def collect_ngrams(text, ngram_length=10):
                 ngram_dict[substring] += 1
             else:
                 ngram_dict[substring] = 1
+    else:
+        for length in range(1, ngram_length):
+            for i in range(len(text)):
+                substring = None
+                try:
+                    substring = text[i:i+length] 
+                except :
+                     break;
+                #print( substring)
+                if substring in ngram_dict:
+                    ngram_dict[substring] += 1
+                else:
+                    ngram_dict[substring] = 1
     return ngram_dict
 
 
@@ -141,21 +157,27 @@ if __name__ == "__main__":
     with open( in_file, 'r', encoding="latin-1") as inputfile:
         body = ""
         for line in inputfile:
-            if line[0] != '#' and parse_line_header(line, transcription='F'):
+            if line[0] != '#' and parse_line_header(line, transcription='H'):
                 line = remove_comments(line)
                 line = remove_filler(line)
                 line = remove_breaks(line)
                 body += remove_line_header(line).strip()
         print( body )
         symb_freq = count_symbol_frequency(body)
-        entropy = calculate_symbol_entropy(symb_freq)
-        phrases = count_phrases( body, 5, logographic=False )
         print( 'symbols:', symb_freq )
-        print( phrases )
-        print( 'entropy:', entropy )
+
+        entropy = calculate_symbol_entropy(symb_freq)
+        #phrases = count_phrases( body, 5, logographic=False )
+        #print( phrases )
         ngrams = collect_ngrams(remove_breaks(body, remove_spaces=False), ngram_length=7)
-        print( ngrams )
-    
+        #print( ngrams )
+
+        ngram_levels = [ collect_ngrams(remove_breaks(body, remove_spaces=False), ngram_length=i, single_level=True) for i in range(1,20) ]
+        ngram_entropies = [ calculate_symbol_entropy( level ) for level in ngram_levels ]
+
+        print( "ngram_entropies(1:20)", ngram_entropies )
+        print( 'entropy:', entropy )
+        print("Found alphabet of %d characters"%len(symb_freq))
 
 """
     test_text = "Do you love me or do you love me not?" #ima be me

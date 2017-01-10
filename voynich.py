@@ -152,6 +152,7 @@ def remove_comments(line):
 
 def remove_filler(line):
     line = line.replace("!","")
+    line = line.replace("*","")
     return line.replace("%","")
 
 def remove_breaks(line,remove_spaces=False):
